@@ -1,0 +1,36 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: main
+  namespace: expl-bot
+spec:
+  chart:
+    git: https://github.com/majori/expl-bot.git
+    ref: master
+    path: charts/expl-bot
+  values:
+    image:
+      pullPolicy: Always
+    postgres:
+      host: expl-bot-postgres.expl-bot.svc.cluster.local
+      database: expl_bot
+      userSecret:
+        name: majori.expl-bot-postgres.credentials.postgresql.acid.zalan.do
+        key: username
+      passwordSecret:
+        name: majori.expl-bot-postgres.credentials.postgresql.acid.zalan.do
+        key: password
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: "nginx"
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+        cert-manager.io/acme-challenge-type: http01
+        nginx.ingress.kubernetes.io/configuration-snippet: "proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;"
+      host: expl-bot.majori.dev
+      tls:
+        secretName: expl-bot-tls
+  valuesFrom:
+    - secretKeyRef:
+        name: helm-release-main-secret-values
+        optional: false

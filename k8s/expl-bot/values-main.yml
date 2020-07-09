@@ -1,0 +1,16 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: helm-release-main-secret-values
+  namespace: expl-bot
+spec:
+  encryptedData:
+    values.yaml: AgBLM1ldql9hlJH3TLCpBw/H5zIywtC7I29ERkQp8Rv04WyygjuMhvKKsQw8pZZ9wBANVllouRobWYXJNUu/RHsANHgy9ILeCXE+SMXt7JSFQxyk5UPCUTCasb+AP1xjFofYXW4O1QCzsKUTOy3yNS8UhjSSEuctNMFMARPKKtRy26wpADxYFGotZwgFS2Vsnac9ECZvmJKEecBGp+rZp864461NMfdKG3//4Jfae5MID+xVuwlnPljTek/u7vZbH/jHbFR+ex1VFrZ4nNLqXf38gwUFyv2Wy3/1c0J0OctmxunA5X0cSF2PmXOC2aJzvOXv1hYsiX7rIQzmzHGMa9y+SRXruRlMLGRtM0EZHuM1qR/SUATGXEmz6Da7YTbY5YpCBRouoGl505lk/HGcpiNwn2VA98VKr11saCYUYu2HfHY2HYDl0B5CNAK5p7KRKqdIjvj4ll3wv4sS+mecjjkYrPPvI8MpbW1X8aOfW19bORNoXmSeeFP1vDyomSYJNULXUY6T8dTOMBFzd0SqmlfLMXTcQxRIQgoy5ltxXMu0q6hKpFhIRHMwHybxylQvXaUVlZr+hRzDz/AxIojngKyz/KyvQHk5v3fZIWpq3B8SRT1vMWBGNB40M7RkPLnuXn+JwpzgionQyt/0Vs5Z7Q0KWnuvGRp40zUo4mDkbrdTmptyjS+iPWddAVq4BCbpTk0MK/p6teM6RhZjn/qtysZPhf1zJCs6Fy3lyw6Y0xAXeu/mmduWpJI6tXW4l3MC9mMymtRuFgzqgNtSLwGOJWkisQ==
+  template:
+    metadata:
+      creationTimestamp: null
+      name: helm-release-main-secret-values
+      namespace: expl-bot
+    type: Opaque
+

@@ -1,0 +1,16 @@
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  creationTimestamp: null
+  name: helm-release-boris-secret-values
+  namespace: expl-bot
+spec:
+  encryptedData:
+    values.yaml: AgCu4U0dUOdJGAlm0FYaTwj1hVtbpfuth3m4hbm1crhW1RNCf5AItexggG14/Y+iMfw2Isx1k/vWwuSbvYZu9LA3fg8l9btT/JWgYghn+GkY5N4qwsN1BkNhZJXivQ2Uyeug39miKoM4qTDv51AcrM/p6YIuDV1woNbxCLgHBu+3DVd4T2u+j/l2UECfKHlwt2duUtYl2azPnHixDZvU7fUoovpB++lgZf/XTIzjpvkHmL3o7FzxPgfmlYx7ZDEgH00XYU3ssQQJ+S1R8eXUKPe0N+x1mlRf3CMmzqVaPcOn9eqPRx/FzDt8eXQDKJ89mWWLarmhNPMycC+U1qrKlHyxr83z8/FdCNGDY/cPMtPknIrKrCPhRCcxDnZiohItLBIry8/s5Dl8axp7QN+wYP6U3s42wyqh1xHhm4vxDyS4chw78l8dDDxYek3c64fHSD9FY4KVW0otZcQ0oLBE+PhZ+1ZbhEoAC0vdfuv3sHnn6U92Eudr31KsM3GsaYTiM+s/9zAXbrsc/Kh6ami1L48H3Kshttg9xKQdQx5B2hJ2X3y8sEEpQKaoZCQ2ldWKLZ63PsqpDFV/XgFnuHp76xDFJqxjOSSKol24sKzqrExqd0uTv92uCKNNfoyAH1Xz+zgJ+uyf8lLjpIvWCem0E7Kw3qNKirKdMBJZgxiE+A/0+Ov4wkYYPY/VdNLA1LVgvkf2oPrxQP0412cJb7h4BK1FXF3lGvuhIHYYAXa3Js9zBnNcr/II5KZVHmBlsa6zvZIpoTFuzniGg+1PfbbIkWn5
+  template:
+    metadata:
+      creationTimestamp: null
+      name: helm-release-boris-secret-values
+      namespace: expl-bot
+    type: Opaque
+
