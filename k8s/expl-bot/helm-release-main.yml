@@ -3,6 +3,8 @@ kind: HelmRelease
 metadata:
   name: main
   namespace: expl-bot
+  annotations:
+    fluxcd.io/automated: "true"
 spec:
   chart:
     git: https://github.com/majori/expl-bot.git
