@@ -234,6 +234,11 @@ resource "helm_release" "flux" {
   version    = "1.3.0"
   namespace  = kubernetes_namespace.flux.metadata[0].name
 
+  set {
+    name = "git.url"
+    value = "git@github.com:majori/gitops-azure"
+  }
+
   depends_on = [
     helm_release.linkerd,
   ]
