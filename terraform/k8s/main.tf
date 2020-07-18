@@ -204,6 +204,22 @@ resource "kubernetes_namespace" "flux" {
   }
 }
 
+resource "tls_private_key" "flux_identity" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "kubernetes_secret" "flux_git_deploy" {
+  metadata {
+    name      = "flux-git-deploy"
+    namespace = kubernetes_namespace.flux.metadata[0].name
+  }
+
+  data = {
+    identity = tls_private_key.flux_identity.private_key_pem
+  }
+}
+
 resource "helm_release" "helm_operator" {
   name       = "helm-operator"
   repository = "https://charts.fluxcd.io"
@@ -218,7 +234,7 @@ resource "helm_release" "helm_operator" {
 
   set {
     name  = "git.ssh.secretName"
-    value = "flux-git-deploy"
+    value = kubernetes_secret.flux_git_deploy.metadata[0].name
   }
 
 
@@ -235,8 +251,13 @@ resource "helm_release" "flux" {
   namespace  = kubernetes_namespace.flux.metadata[0].name
 
   set {
-    name = "git.url"
+    name  = "git.url"
     value = "git@github.com:majori/gitops-azure"
+  }
+
+  set {
+    name  = "git.secretName"
+    value = kubernetes_secret.flux_git_deploy.metadata[0].name
   }
 
   depends_on = [
