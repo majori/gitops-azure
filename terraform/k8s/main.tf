@@ -252,7 +252,7 @@ resource "helm_release" "flux" {
 
   set {
     name  = "git.url"
-    value = "git@github.com:majori/gitops-azure"
+    value = var.gitops_repo
   }
 
   set {
