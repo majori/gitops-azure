@@ -8,6 +8,7 @@ spec:
   volume:
     size: 1Gi
   numberOfInstances: 1
+  enableLogicalBackup: true
   users:
     majori:
       - superuser
