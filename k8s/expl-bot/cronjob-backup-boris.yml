@@ -1,0 +1,49 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: backup-boris-bot
+  namespace: expl-bot
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            linkerd.io/inject: disabled
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: majori/postgresql-dropbox-backuper
+              imagePullPolicy: Always
+              command: ["./run-backup.sh"]
+              resources:
+                limits:
+                  cpu: 250m
+                  memory: 126Mi
+              env:
+                - name: PG_HOSTNAME
+                  value: expl-bot-postgres.expl-bot.svc.cluster.local
+                - name: PG_DATABASE
+                  value: boris_bot
+                - name: PG_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres.expl-bot-postgres.credentials.postgresql.acid.zalan.do
+                      key: username
+                - name: PG_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres.expl-bot-postgres.credentials.postgresql.acid.zalan.do
+                      key: password
+                - name: DROPBOX_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: dropbox-token
+                      key: token
+                - name: ENCRYPTION_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: backup-encryption-password
+                      key: password
