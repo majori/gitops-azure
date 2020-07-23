@@ -34,7 +34,7 @@ spec:
             secretKeyRef:
               name: dropbox-token
               key: token
-        - name: PASSWORD
+        - name: ENCRYPTION_PASSWORD
           valueFrom:
             secretKeyRef:
               name: backup-encryption-password
