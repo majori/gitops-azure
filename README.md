@@ -2,8 +2,5 @@
 2. `./init.sh`
 
 ```
-kubeseal kubeseal --fetch-cert \
---controller-namespace=kube-system \
---controller-name=sealed-secrets \
-> pub-cert.pem
+terraform output -json | jq -r '.kubeseal_cert.value' > kubeseal-cert.pem
 ```

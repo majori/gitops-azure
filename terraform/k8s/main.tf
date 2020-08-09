@@ -32,12 +32,50 @@ provider "helm" {
   }
 }
 
+resource "tls_private_key" "sealed_secrets" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "tls_self_signed_cert" "sealed_secrets" {
+  key_algorithm   = tls_private_key.sealed_secrets.algorithm
+  private_key_pem = tls_private_key.sealed_secrets.private_key_pem
+  validity_period_hours = 87600 // 10 years
+
+  subject {
+    common_name  = "example.com"
+  }
+
+  allowed_uses = [
+    "encipher_only"
+  ]
+}
+
+resource "kubernetes_secret" "sealed_secrets" {
+  metadata {
+    name      = "sealed-secrets-key"
+    namespace = "kube-system"
+  }
+
+  type = "kubernetes.io/tls"
+
+  data = {
+    "tls.key" = tls_private_key.sealed_secrets.private_key_pem
+    "tls.crt" = tls_self_signed_cert.sealed_secrets.cert_pem
+  }
+}
+
 resource "helm_release" "sealed_secrets" {
   name       = "sealed-secrets"
   chart      = "sealed-secrets"
   repository = "https://kubernetes-charts.storage.googleapis.com"
   version    = "1.10.3"
   namespace  = "kube-system"
+
+  set {
+    name = "secretName"
+    value = kubernetes_secret.sealed_secrets.metadata[0].name
+  }
 }
 
 
