@@ -207,12 +207,37 @@ resource "kubernetes_namespace" "ingress" {
   }
 }
 
-resource "helm_release" "nginx" {
+resource "helm_release" "nginx_ingress" {
   name       = "nginx-ingress"
   repository = "https://helm.nginx.com/stable"
   chart      = "nginx-ingress"
-  version    = "0.5.2"
+  version    = "0.6.0"
   namespace  = kubernetes_namespace.ingress.metadata[0].name
+
+  set {
+    name  = "controller.name"
+    value = "nginx-ingress"
+  }
+
+  set {
+    name  = "controller.service.name"
+    value = "nginx-ingress"
+  }
+
+  set {
+    name  = "controller.config.name"
+    value = "nginx-ingress"
+  }
+
+  set {
+    name  = "controller.serviceAccount.name"
+    value = "nginx-ingress"
+  }
+
+  set {
+    name  = "controller.reportIngressStatus.leaderElectionLockName"
+    value = "nginx-ingress-leader-election"
+  }
 
   set {
     name  = "controller.service.loadBalancerIP"
@@ -267,11 +292,6 @@ resource "helm_release" "helm_operator" {
     name  = "git.ssh.secretName"
     value = kubernetes_secret.flux_git_deploy.metadata[0].name
   }
-
-
-  depends_on = [
-    helm_release.linkerd,
-  ]
 }
 
 resource "helm_release" "flux" {
