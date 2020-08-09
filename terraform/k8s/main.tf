@@ -159,12 +159,9 @@ resource "helm_release" "linkerd" {
   }
 }
 
-resource "kubernetes_namespace" "postgres_operator" {
+resource "kubernetes_namespace" "operators" {
   metadata {
-    name = "postgres-operator"
-    annotations = {
-      "linkerd.io/inject" : "enabled"
-    }
+    name = "operators"
   }
 }
 
@@ -172,11 +169,7 @@ resource "helm_release" "postgres_operator" {
   name  = "postgres-operator"
   chart = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator/postgres-operator-1.5.0.tgz"
   # version    = "1.5.0"
-  namespace = kubernetes_namespace.postgres_operator.metadata[0].name
-
-  depends_on = [
-    helm_release.linkerd,
-  ]
+  namespace = kubernetes_namespace.operators.metadata[0].name
 }
 
 resource "kubernetes_namespace" "cert_manager" {
