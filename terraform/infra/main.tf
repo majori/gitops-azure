@@ -17,24 +17,6 @@ resource "azurerm_resource_group" "main" {
   location = var.location
 }
 
-resource "random_id" "storage_account" {
-  byte_length = 4
-}
-
-resource "azurerm_storage_account" "main" {
-  name                     = "storage${random_id.storage_account.hex}"
-  resource_group_name      = azurerm_resource_group.main.name
-  location                 = azurerm_resource_group.main.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
-
-resource "azurerm_storage_container" "terraform" {
-  name                  = "terraformstate"
-  storage_account_name  = azurerm_storage_account.main.name
-  container_access_type = "private"
-}
-
 resource "random_id" "aks" {
   byte_length = 4
 }
@@ -52,7 +34,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   dns_prefix          = "aks"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  kubernetes_version  = "1.15.11"
+  kubernetes_version  = "1.16.10"
 
   identity {
     type = "SystemAssigned"

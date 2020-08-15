@@ -1,11 +1,10 @@
 data "terraform_remote_state" "infra" {
-  backend = "azurerm"
+  backend = "kubernetes"
 
   config = {
-    resource_group_name  = "personal"
-    storage_account_name = "storagecf8d4bcc"
-    container_name       = "terraformstate"
-    key                  = "infra.terraform.tfstate"
+    secret_suffix    = "infra"
+    load_config_file = true
+    config_context   = "personal"
   }
 }
 
@@ -38,12 +37,12 @@ resource "tls_private_key" "sealed_secrets" {
 }
 
 resource "tls_self_signed_cert" "sealed_secrets" {
-  key_algorithm   = tls_private_key.sealed_secrets.algorithm
-  private_key_pem = tls_private_key.sealed_secrets.private_key_pem
+  key_algorithm         = tls_private_key.sealed_secrets.algorithm
+  private_key_pem       = tls_private_key.sealed_secrets.private_key_pem
   validity_period_hours = 87600 // 10 years
 
   subject {
-    common_name  = "example.com"
+    common_name = "example.com"
   }
 
   allowed_uses = [
@@ -73,7 +72,7 @@ resource "helm_release" "sealed_secrets" {
   namespace  = "kube-system"
 
   set {
-    name = "secretName"
+    name  = "secretName"
     value = kubernetes_secret.sealed_secrets.metadata[0].name
   }
 }

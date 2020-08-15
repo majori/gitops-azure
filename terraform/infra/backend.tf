@@ -1,8 +1,7 @@
 terraform {
-  backend "azurerm" {
-    resource_group_name   = "personal"
-    storage_account_name  = "storagecf8d4bcc"
-    container_name        = "terraformstate"
-    key                   = "infra.terraform.tfstate"
+  backend "kubernetes" {
+    secret_suffix    = "infra"
+    load_config_file = true
+    config_context   = "personal"
   }
 }
