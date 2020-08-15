@@ -12,15 +12,14 @@ fi
 terraform init -input=false -reconfigure
 terraform apply -auto-approve
 
-OUTPUT=$(terraform output -json)
+terraform output -json | jq -r '.kube_config.value' > ../kubeconfig
 
 cat > $BACKEND_FILE <<- EOM
 terraform {
-  backend "azurerm" {
-    resource_group_name   = "$(echo $OUTPUT | jq -r '.resource_group_name.value')"
-    storage_account_name  = "$(echo $OUTPUT | jq -r '.storage_account_name.value')"
-    container_name        = "$(echo $OUTPUT | jq -r '.container_name.value')"
-    key                   = "infra.terraform.tfstate"
+  backend "kubernetes" {
+    secret_suffix    = "infra"
+    load_config_file = true
+    config_path      = "../kubeconfig"
   }
 }
 EOM
@@ -28,5 +27,5 @@ EOM
 # Copy local state to the remote state
 terraform init -force-copy -input=false
 
-# Remove local state files
+# Remove any local state files
 rm *.tfstate*
