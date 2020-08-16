@@ -213,11 +213,6 @@ resource "helm_release" "nginx_ingress" {
   }
 
   set {
-    name  = "controller.config.name"
-    value = "nginx-ingress"
-  }
-
-  set {
     name  = "controller.serviceAccount.name"
     value = "nginx-ingress"
   }
@@ -235,6 +230,11 @@ resource "helm_release" "nginx_ingress" {
   set {
     name  = "controller.service.annotations.service\\.beta\\.kubernetes\\.io/azure-load-balancer-resource-group"
     value = data.terraform_remote_state.infra.outputs.resource_group_name
+  }
+
+  set {
+    name  = "controller.config.name"
+    value = "nginx-ingress"
   }
 
   depends_on = [

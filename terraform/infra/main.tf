@@ -21,6 +21,14 @@ resource "random_id" "aks" {
   byte_length = 4
 }
 
+resource "azurerm_log_analytics_workspace" "main" {
+  name                = "law-${random_id.aks.hex}"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
+}
+
 resource "azurerm_public_ip" "aks_ingress" {
   name                = "public-ip-aks-ingress-${random_id.aks.hex}"
   location            = azurerm_resource_group.main.location
@@ -44,6 +52,17 @@ resource "azurerm_kubernetes_cluster" "main" {
     name       = "default"
     node_count = 2
     vm_size    = "Standard_B2s"
+  }
+
+  addon_profile {
+    http_application_routing {
+      enabled = false
+    }
+
+    oms_agent {
+      enabled                    = true
+      log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+    }
   }
 }
 
