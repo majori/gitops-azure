@@ -1,0 +1,36 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: piikki
+  namespace: piikki
+  annotations:
+    fluxcd.io/automated: "true"
+spec:
+  chart:
+    git: https://github.com/majori/piikki.git
+    ref: development
+    path: charts/piikki
+  values:
+    fullnameOverride: api
+    image:
+      pullPolicy: Always
+      tag: development # TODO
+    postgres:
+      host: piikki-postgres.piikki.svc.cluster.local
+      database: piikki
+      userSecret:
+        name: majori.piikki-postgres.credentials.postgresql.acid.zalan.do
+        key: username
+      passwordSecret:
+        name: majori.piikki-postgres.credentials.postgresql.acid.zalan.do
+        key: password
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: "nginx"
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+        cert-manager.io/acme-challenge-type: http01
+        nginx.ingress.kubernetes.io/configuration-snippet: "proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;"
+      host: piikki-api.majori.dev
+      tls:
+        secretName: piikki-tls
