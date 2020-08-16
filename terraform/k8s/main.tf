@@ -186,41 +186,21 @@ resource "helm_release" "cert_manager" {
   ]
 }
 
-resource "kubernetes_namespace" "ingress" {
+resource "kubernetes_namespace" "ingresses" {
   metadata {
-    name = "ingress"
+    name = "ingresses"
     annotations = {
       "linkerd.io/inject" : "enabled"
     }
   }
 }
 
-resource "helm_release" "nginx_ingress" {
-  name       = "nginx-ingress"
-  repository = "https://helm.nginx.com/stable"
-  chart      = "nginx-ingress"
-  version    = "0.6.0"
-  namespace  = kubernetes_namespace.ingress.metadata[0].name
-
-  set {
-    name  = "controller.name"
-    value = "nginx-ingress"
-  }
-
-  set {
-    name  = "controller.service.name"
-    value = "nginx-ingress"
-  }
-
-  set {
-    name  = "controller.serviceAccount.name"
-    value = "nginx-ingress"
-  }
-
-  set {
-    name  = "controller.reportIngressStatus.leaderElectionLockName"
-    value = "nginx-ingress-leader-election"
-  }
+resource "helm_release" "ingress_nginx" {
+  name       = "ingress-nginx"
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  chart      = "ingress-nginx"
+  version    = "2.11.2"
+  namespace  = kubernetes_namespace.ingresses.metadata[0].name
 
   set {
     name  = "controller.service.loadBalancerIP"
@@ -233,8 +213,8 @@ resource "helm_release" "nginx_ingress" {
   }
 
   set {
-    name  = "controller.config.name"
-    value = "nginx-ingress"
+    name  = "controller.admissionWebhooks.patch.podAnnotations.linkerd\\.io/inject"
+    value = "disabled"
   }
 
   depends_on = [
