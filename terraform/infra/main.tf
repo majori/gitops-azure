@@ -54,14 +54,27 @@ resource "azurerm_kubernetes_cluster" "main" {
     vm_size    = "Standard_B2s"
   }
 
-  addon_profile {
-    http_application_routing {
-      enabled = false
-    }
+  network_profile {
+    network_plugin    = "kubenet"
+    load_balancer_sku = "Basic"
+  }
 
+  addon_profile {
     oms_agent {
       enabled                    = true
       log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+    }
+    aci_connector_linux {
+      enabled = false
+    }
+    http_application_routing {
+      enabled = false
+    }
+    azure_policy {
+      enabled = false
+    }
+    kube_dashboard {
+      enabled = false
     }
   }
 }
