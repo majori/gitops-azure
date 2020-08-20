@@ -14,8 +14,8 @@ provider "kubernetes" {
 }
 
 provider "kubernetes-alpha" {
-  # server_side_planning = true
-  config_path = "../kubeconfig"
+  server_side_planning = true
+  config_path          = "../kubeconfig"
 }
 
 provider "helm" {
@@ -71,6 +71,13 @@ resource "helm_release" "sealed_secrets" {
   }
 }
 
+resource "helm_release" "aad_pod_identity" {
+  name       = "aad-pod-identity"
+  repository = "https://raw.githubusercontent.com/Azure/aad-pod-identity/master/charts"
+  chart      = "aad-pod-identity"
+  version    = "2.0.1"
+  namespace  = "kube-system"
+}
 
 resource "tls_private_key" "trustanchor_key" {
   algorithm   = "ECDSA"
@@ -320,5 +327,48 @@ resource "kubernetes_manifest" "cluster_issuer" {
 
   depends_on = [
     helm_release.cert_manager
+  ]
+}
+
+resource "kubernetes_manifest" "azure_identity" {
+  provider = kubernetes-alpha
+
+  manifest = {
+    apiVersion = "aadpodidentity.k8s.io/v1"
+    kind       = "AzureIdentity"
+    metadata = {
+      name      = data.terraform_remote_state.infra.outputs.aks_pod_identity_name
+      namespace = "kube-system"
+    }
+    spec = {
+      type       = 0
+      resourceID = data.terraform_remote_state.infra.outputs.aks_pod_identity_id
+      clientID   = data.terraform_remote_state.infra.outputs.aks_pod_identity_client_id
+    }
+  }
+
+  depends_on = [
+    helm_release.aad_pod_identity
+  ]
+}
+
+resource "kubernetes_manifest" "azure_identity_binding" {
+  provider = kubernetes-alpha
+
+  manifest = {
+    apiVersion = "aadpodidentity.k8s.io/v1"
+    kind       = "AzureIdentityBinding"
+    metadata = {
+      name      = kubernetes_manifest.azure_identity.manifest.metadata.name
+      namespace = "kube-system"
+    }
+    spec = {
+      azureIdentity = kubernetes_manifest.azure_identity.manifest.metadata.name
+      selector      = "default"
+    }
+  }
+
+  depends_on = [
+    helm_release.aad_pod_identity
   ]
 }

@@ -10,3 +10,15 @@ output "kube_config" {
 output "ingress_ip" {
   value = azurerm_public_ip.aks_ingress.ip_address
 }
+
+output "aks_pod_identity_name" {
+  value = "aks-${random_id.aks.hex}-pod-identity-default"
+}
+
+output "aks_pod_identity_id" {
+  value = azurerm_user_assigned_identity.aks_pod_identity.id
+}
+
+output "aks_pod_identity_client_id" {
+  value = azurerm_user_assigned_identity.aks_pod_identity.client_id
+}

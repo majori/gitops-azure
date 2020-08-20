@@ -99,3 +99,9 @@ resource "azurerm_role_assignment" "acr_pull" {
   role_definition_name = "AcrPull"
   principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
 }
+
+resource "azurerm_user_assigned_identity" "aks_pod_identity" {
+  name                = "aks-${random_id.aks.hex}-pod-identity-default"
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+}
