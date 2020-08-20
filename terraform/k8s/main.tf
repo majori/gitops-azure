@@ -13,6 +13,11 @@ provider "kubernetes" {
   config_path      = "../kubeconfig"
 }
 
+provider "kubernetes-alpha" {
+  # server_side_planning = true
+  config_path = "../kubeconfig"
+}
+
 provider "helm" {
   kubernetes {
     load_config_file = true
@@ -281,5 +286,39 @@ resource "helm_release" "flux" {
 
   depends_on = [
     helm_release.linkerd,
+  ]
+}
+
+resource "kubernetes_manifest" "cluster_issuer" {
+  provider = kubernetes-alpha
+
+  manifest = {
+    apiVersion = "cert-manager.io/v1alpha2"
+    kind       = "ClusterIssuer"
+    metadata = {
+      name      = "letsencrypt-prod"
+      namespace = kubernetes_namespace.cert_manager.metadata[0].name
+    }
+    spec = {
+      acme = {
+        server = "https://acme-v02.api.letsencrypt.org/directory"
+        email  = "antti.h.kivimaki@gmail.com"
+        privateKeySecretRef = {
+          name = "letsencrypt-prod"
+        }
+        solvers = [{
+          selector = {}
+          http01 = {
+            ingress = {
+              class = "nginx"
+            }
+          }
+        }]
+      }
+    }
+  }
+
+  depends_on = [
+    helm_release.cert_manager
   ]
 }

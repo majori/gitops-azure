@@ -1,3 +1,5 @@
 .env
 .terraform
 kubeconfig
+terraform/plugins/*
+terraform/**/dev.log
