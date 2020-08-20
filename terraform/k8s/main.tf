@@ -271,7 +271,7 @@ resource "helm_release" "flux" {
   name       = "flux"
   repository = "https://charts.fluxcd.io"
   chart      = "flux"
-  version    = "1.3.0"
+  version    = "1.4.1"
   namespace  = kubernetes_namespace.flux.metadata[0].name
 
   set {
