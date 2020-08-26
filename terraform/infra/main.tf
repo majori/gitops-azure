@@ -42,7 +42,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   dns_prefix          = "aks"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  kubernetes_version  = "1.16.10"
+  kubernetes_version  = "1.17.9"
 
   identity {
     type = "SystemAssigned"
