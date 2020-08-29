@@ -7,6 +7,12 @@
 terraform output -json | jq -r '.kubeseal_cert.value' > kubeseal-cert.pem
 ```
 
+## Wrap Helm values to Sealed Secret
+
+```
+cat values.yaml | kubectl create secret generic values --dry-run=client --from-file=values.yaml=/dev/stdin -o yaml | kubeseal --cert kubeseal-cert.pem -o yaml > secret.yaml
+```
+
 ## TODO:
 
 - Modify init.sh so that it checks if backend already exists without looking the backend.tf file. If backend exists, it generates the backend.tf based on the existing backend. This way backend.tf could be gitignored and backend information does not need to committed. Use case: CI
