@@ -260,7 +260,7 @@ resource "helm_release" "helm_operator" {
   name       = "helm-operator"
   repository = "https://charts.fluxcd.io"
   chart      = "helm-operator"
-  version    = "1.1.0"
+  version    = "1.2.0"
   namespace  = kubernetes_namespace.flux.metadata[0].name
 
   set {
@@ -278,7 +278,7 @@ resource "helm_release" "flux" {
   name       = "flux"
   repository = "https://charts.fluxcd.io"
   chart      = "flux"
-  version    = "1.4.1"
+  version    = "1.5.0"
   namespace  = kubernetes_namespace.flux.metadata[0].name
 
   set {
