@@ -13,6 +13,6 @@ spec:
       - superuser
   databases:
     piikki: majori
-    piikki_tg_client: majori
+    piikki_client_tg: majori
   postgresql:
     version: "12"

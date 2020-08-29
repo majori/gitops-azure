@@ -16,7 +16,7 @@ spec:
       tag: development # TODO
     postgres:
       host: piikki-postgres.piikki.svc.cluster.local
-      database: piikki-client-tg
+      database: piikki_client_tg
       userSecret:
         name: majori.piikki-postgres.credentials.postgresql.acid.zalan.do
         key: username
