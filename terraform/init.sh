@@ -8,7 +8,7 @@ curl \
   -o provider.zip \
   https://github.com/hashicorp/terraform-provider-kubernetes-alpha/releases/download/v0.1.0/terraform-provider-kubernetes-alpha_0.1.0_darwin_amd64.zip
 unzip provider.zip -d ~/.terraform.d/plugins
-
+rm provider.zip
 
 cd ./infra
 

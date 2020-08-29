@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "=2.10.0"
+  version = "=2.20.0"
   features {}
 
   subscription_id = "0c85512e-cd7a-41b3-ae82-cdc864b7deb8"
@@ -37,21 +37,26 @@ resource "azurerm_public_ip" "aks_ingress" {
   sku                 = "Basic"
 }
 
+locals {
+  kubernetes_version = "1.17.9"
+}
+
 resource "azurerm_kubernetes_cluster" "main" {
   name                = "aks-${random_id.aks.hex}"
   dns_prefix          = "aks"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
-  kubernetes_version  = "1.17.9"
+  kubernetes_version  = local.kubernetes_version
 
   identity {
     type = "SystemAssigned"
   }
 
   default_node_pool {
-    name       = "default"
-    node_count = 2
-    vm_size    = "Standard_B2s"
+    name                 = "default"
+    node_count           = 2
+    vm_size              = "Standard_B2s"
+    orchestrator_version = local.kubernetes_version
   }
 
   network_profile {
