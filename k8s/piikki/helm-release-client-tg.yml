@@ -8,12 +8,12 @@ metadata:
 spec:
   chart:
     git: https://github.com/majori/piikki-client-tg.git
-    ref: development
+    ref: master
     path: charts/piikki-client-tg
   values:
     image:
       pullPolicy: Always
-      tag: development # TODO
+      tag: latest
     api:
       url: http://piikki-api.piikki.svc.cluster.local
     postgres:
