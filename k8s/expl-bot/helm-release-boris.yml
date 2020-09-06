@@ -6,6 +6,7 @@ metadata:
   namespace: expl-bot
   annotations:
     fluxcd.io/automated: "true"
+    filter.fluxcd.io/chart-image: "glob:latest"
 spec:
   chart:
     git: https://github.com/majori/expl-bot.git
@@ -14,7 +15,7 @@ spec:
   values:
     image:
       repository: ghcr.io/majori/expl-bot
-      tag: development
+      tag: latest
     postgres:
       host: expl-bot-postgres.expl-bot.svc.cluster.local
       database: boris_bot
@@ -37,6 +38,6 @@ spec:
       tls:
         secretName: expl-bot-boris-tls
   valuesFrom:
-  - secretKeyRef:
-      name: helm-release-boris-secret-values
-      optional: false
+    - secretKeyRef:
+        name: helm-release-boris-secret-values
+        optional: false

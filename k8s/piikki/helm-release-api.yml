@@ -6,6 +6,7 @@ metadata:
   namespace: piikki
   annotations:
     fluxcd.io/automated: "true"
+    filter.fluxcd.io/chart-image: "glob:latest"
 spec:
   chart:
     git: https://github.com/majori/piikki.git
@@ -14,7 +15,7 @@ spec:
   values:
     image:
       repository: majori/piikki
-      tag: development
+      tag: latest
     postgres:
       host: piikki-postgres.piikki.svc.cluster.local
       database: piikki

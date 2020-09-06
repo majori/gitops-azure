@@ -6,6 +6,7 @@ metadata:
   namespace: piikki
   annotations:
     fluxcd.io/automated: "true"
+    filter.fluxcd.io/chart-image: "glob:latest"
 spec:
   chart:
     git: https://github.com/majori/piikki-client-tg.git
@@ -14,7 +15,7 @@ spec:
   values:
     image:
       repository: majori/piikki-client-tg
-      tag: development
+      tag: latest
     api:
       url: http://piikki-api.piikki.svc.cluster.local
     postgres:
@@ -39,6 +40,6 @@ spec:
       tls:
         secretName: piikki-client-tg-tls
   valuesFrom:
-  - secretKeyRef:
-      name: helm-release-client-tg-secret-values
-      optional: false
+    - secretKeyRef:
+        name: helm-release-client-tg-secret-values
+        optional: false
