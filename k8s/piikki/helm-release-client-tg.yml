@@ -1,3 +1,4 @@
+---
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
@@ -13,7 +14,7 @@ spec:
   values:
     image:
       repository: majori/piikki-client-tg
-      tag: latest
+      tag: development
     api:
       url: http://piikki-api.piikki.svc.cluster.local
     postgres:
@@ -38,6 +39,6 @@ spec:
       tls:
         secretName: piikki-client-tg-tls
   valuesFrom:
-    - secretKeyRef:
-        name: helm-release-client-tg-secret-values
-        optional: false
+  - secretKeyRef:
+      name: helm-release-client-tg-secret-values
+      optional: false

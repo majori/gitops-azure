@@ -1,3 +1,4 @@
+---
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
@@ -13,7 +14,7 @@ spec:
   values:
     image:
       repository: ghcr.io/majori/expl-bot
-      tag: latest
+      tag: development
     postgres:
       host: expl-bot-postgres.expl-bot.svc.cluster.local
       database: expl_bot
@@ -36,6 +37,6 @@ spec:
       tls:
         secretName: expl-bot-main-tls
   valuesFrom:
-    - secretKeyRef:
-        name: helm-release-main-secret-values
-        optional: false
+  - secretKeyRef:
+      name: helm-release-main-secret-values
+      optional: false

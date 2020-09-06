@@ -1,3 +1,4 @@
+---
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
@@ -13,7 +14,7 @@ spec:
   values:
     image:
       repository: majori/piikki
-      tag: latest
+      tag: development
     postgres:
       host: piikki-postgres.piikki.svc.cluster.local
       database: piikki
