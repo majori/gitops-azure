@@ -12,7 +12,7 @@ spec:
     path: charts/piikki
   values:
     image:
-      pullPolicy: Always
+      repository: ghcr.io/majori/piikki
       tag: latest
     postgres:
       host: piikki-postgres.piikki.svc.cluster.local

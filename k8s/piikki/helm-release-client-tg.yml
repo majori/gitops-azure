@@ -12,7 +12,7 @@ spec:
     path: charts/piikki-client-tg
   values:
     image:
-      pullPolicy: Always
+      repository: ghcr.io/majori/piikki-client-tg
       tag: latest
     api:
       url: http://piikki-api.piikki.svc.cluster.local

@@ -12,7 +12,8 @@ spec:
     path: charts/expl-bot
   values:
     image:
-      pullPolicy: Always
+      repository: ghcr.io/majori/expl-bot
+      tag: latest
     postgres:
       host: expl-bot-postgres.expl-bot.svc.cluster.local
       database: expl_bot
