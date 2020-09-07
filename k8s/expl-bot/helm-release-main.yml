@@ -6,7 +6,7 @@ metadata:
   namespace: expl-bot
   annotations:
     fluxcd.io/automated: "true"
-    filter.fluxcd.io/chart-image: "glob:latest"
+    filter.fluxcd.io/chart-image: "semver:~0"
 spec:
   chart:
     git: https://github.com/majori/expl-bot.git
