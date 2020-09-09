@@ -152,11 +152,26 @@ resource "tls_locally_signed_cert" "issuer_cert" {
   ]
 }
 
+resource "kubernetes_namespace" "linkerd" {
+  metadata {
+    name = "linkerd"
+    labels = {
+      "linkerd.io/control-plane-ns"          = "linkerd"
+      "config.linkerd.io/admission-webhooks" = "disabled"
+      "linkerd.io/is-control-plane"          = "true"
+    }
+    annotations = {
+      "linkerd.io/inject" = "disable"
+    }
+  }
+}
+
 resource "helm_release" "linkerd" {
-  name       = "main"
+  name       = "linkerd2"
   repository = "https://helm.linkerd.io/stable"
   chart      = "linkerd2"
   version    = "2.8.1"
+  namespace  = kubernetes_namespace.linkerd.metadata[0].name
 
   set_sensitive {
     name  = "global.identityTrustAnchorsPEM"
@@ -176,6 +191,16 @@ resource "helm_release" "linkerd" {
   set_sensitive {
     name  = "identity.issuer.tls.keyPEM"
     value = tls_private_key.issuer_key.private_key_pem
+  }
+
+  set {
+    name  = "installNamespace"
+    value = false
+  }
+
+  set {
+    name  = "grafana.enabled"
+    value = false
   }
 }
 
@@ -210,6 +235,10 @@ resource "kubernetes_namespace" "cert_manager" {
       "linkerd.io/inject" : "enabled"
     }
   }
+
+  depends_on = [
+    helm_release.linkerd,
+  ]
 }
 
 resource "helm_release" "cert_manager" {
@@ -223,10 +252,6 @@ resource "helm_release" "cert_manager" {
     name  = "installCRDs"
     value = "true"
   }
-
-  depends_on = [
-    helm_release.linkerd,
-  ]
 }
 
 resource "kubernetes_namespace" "ingresses" {
@@ -236,6 +261,10 @@ resource "kubernetes_namespace" "ingresses" {
       "linkerd.io/inject" : "enabled"
     }
   }
+
+  depends_on = [
+    helm_release.linkerd,
+  ]
 }
 
 resource "helm_release" "ingress_nginx" {
@@ -266,10 +295,6 @@ resource "helm_release" "ingress_nginx" {
     name  = "controller.admissionWebhooks.patch.podAnnotations.linkerd\\.io/inject"
     value = "disabled"
   }
-
-  depends_on = [
-    helm_release.linkerd,
-  ]
 }
 
 resource "kubernetes_namespace" "flux" {
@@ -328,10 +353,6 @@ resource "helm_release" "flux" {
     name  = "git.secretName"
     value = kubernetes_secret.flux_git_deploy.metadata[0].name
   }
-
-  depends_on = [
-    helm_release.linkerd,
-  ]
 }
 
 resource "kubernetes_manifest" "cluster_issuer" {
