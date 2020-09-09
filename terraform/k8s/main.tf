@@ -77,6 +77,26 @@ resource "helm_release" "aad_pod_identity" {
   chart      = "aad-pod-identity"
   version    = "2.0.1"
   namespace  = "kube-system"
+
+  set {
+    name  = "mic.resources.requests.cpu"
+    value = "10m"
+  }
+
+  set {
+    name  = "mic.resources.requests.memory"
+    value = "10Mi"
+  }
+
+  set {
+    name  = "nmi.resources.requests.cpu"
+    value = "10m"
+  }
+
+  set {
+    name  = "nmi.resources.requests.memory"
+    value = "10Mi"
+  }
 }
 
 resource "tls_private_key" "trustanchor_key" {
@@ -166,10 +186,21 @@ resource "kubernetes_namespace" "operators" {
 }
 
 resource "helm_release" "postgres_operator" {
-  name  = "postgres-operator"
-  chart = "https://opensource.zalando.com/postgres-operator/charts/postgres-operator/postgres-operator-1.5.0.tgz"
-  # version    = "1.5.0"
-  namespace = kubernetes_namespace.operators.metadata[0].name
+  name       = "postgres-operator"
+  repository = "https://raw.githubusercontent.com/zalando/postgres-operator/master/charts/postgres-operator"
+  chart      = "postgres-operator"
+  version    = "1.5.0"
+  namespace  = kubernetes_namespace.operators.metadata[0].name
+
+  set {
+    name  = "resources.requests.cpu"
+    value = "10m"
+  }
+
+  set {
+    name  = "resources.requests.memory"
+    value = "20Mi"
+  }
 }
 
 resource "kubernetes_namespace" "cert_manager" {
