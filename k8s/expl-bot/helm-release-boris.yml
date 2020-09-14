@@ -16,7 +16,7 @@ spec:
     image:
       registry: ghcr.io
       repository: majori/expl-bot
-      tag: 0.1.3
+      tag: 0.1.4
     postgres:
       host: expl-bot-postgres.expl-bot.svc.cluster.local
       database: boris_bot
