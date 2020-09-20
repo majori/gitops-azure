@@ -322,6 +322,12 @@ resource "helm_release" "flux" {
   }
 
   set {
+    name  = "git.path"
+    value = "k8s"
+  }
+
+
+  set {
     name  = "git.secretName"
     value = kubernetes_secret.flux_git_deploy.metadata[0].name
   }
