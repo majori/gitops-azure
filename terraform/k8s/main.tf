@@ -298,6 +298,9 @@ resource "helm_release" "helm_operator" {
   version    = "1.2.0"
   namespace  = kubernetes_namespace.flux.metadata[0].name
 
+  # Supported values:
+  # https://github.com/fluxcd/helm-operator/blob/master/chart/helm-operator/values.yaml
+
   set {
     name  = "helm.versions"
     value = "v3"
@@ -306,6 +309,11 @@ resource "helm_release" "helm_operator" {
   set {
     name  = "git.ssh.secretName"
     value = kubernetes_secret.flux_git_deploy.metadata[0].name
+  }
+
+  set {
+    name = "rbac.create"
+    value = false
   }
 }
 
@@ -316,9 +324,12 @@ resource "helm_release" "flux" {
   version    = "1.5.0"
   namespace  = kubernetes_namespace.flux.metadata[0].name
 
+  # Supported values:
+  # https://github.com/fluxcd/flux/blob/master/chart/flux/values.yaml
+
   set {
     name  = "git.url"
-    value = var.gitops_repo
+    value = var.gitops_repo_url
   }
 
   set {
@@ -326,10 +337,14 @@ resource "helm_release" "flux" {
     value = var.gitops_repo_path
   }
 
-
   set {
     name  = "git.secretName"
     value = kubernetes_secret.flux_git_deploy.metadata[0].name
+  }
+
+  set {
+    name = "rbac.create"
+    value = false
   }
 }
 
