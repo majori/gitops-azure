@@ -76,5 +76,5 @@ resource "azurerm_kubernetes_cluster" "main" {
 resource "azurerm_role_assignment" "aks_ingress" {
   scope                = azurerm_resource_group.main.id
   role_definition_name = "Network Contributor"
-  principal_id         = azurerm_kubernetes_cluster.main.kubelet_identity[0].object_id
+  principal_id         = azurerm_kubernetes_cluster.main.identity[0].principal_id
 }
