@@ -43,32 +43,15 @@ resource "azurerm_kubernetes_cluster" "main" {
 
   default_node_pool {
     name                 = "default"
-    node_count           = 2
+    node_count           = 3
     vm_size              = "Standard_B2s"
     orchestrator_version = local.kubernetes_version
+    os_disk_size_gb      = 64
   }
 
   network_profile {
     network_plugin    = "kubenet"
     load_balancer_sku = "Basic"
-  }
-
-  addon_profile {
-    oms_agent {
-      enabled = false
-    }
-    aci_connector_linux {
-      enabled = false
-    }
-    http_application_routing {
-      enabled = false
-    }
-    azure_policy {
-      enabled = false
-    }
-    kube_dashboard {
-      enabled = false
-    }
   }
 }
 
