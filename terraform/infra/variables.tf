@@ -1,7 +1,3 @@
-variable "resource_group_name" {
-  default = "personal"
-}
+variable "resource_group_name" {}
 
-variable "location" {
-  default = "West Europe"
-}
+variable "location" {}

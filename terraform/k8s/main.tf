@@ -323,7 +323,7 @@ resource "helm_release" "flux" {
 
   set {
     name  = "git.path"
-    value = "k8s"
+    value = var.gitops_repo_path
   }
 
 
@@ -346,7 +346,7 @@ resource "kubernetes_manifest" "cluster_issuer" {
     spec = {
       acme = {
         server = "https://acme-v02.api.letsencrypt.org/directory"
-        email  = "antti.h.kivimaki@gmail.com"
+        email  = var.letsencrypt_email
         privateKeySecretRef = {
           name = "letsencrypt-prod"
         }

@@ -1,3 +1,7 @@
-variable "gitops_repo" {
-  default = "git@github.com:majori/gitops-azure"
+variable "gitops_repo" {}
+
+variable "gitops_repo_path" {
+  default = "k8s"
 }
+
+variable "letsencrypt_email" {}
