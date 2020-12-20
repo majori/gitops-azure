@@ -20,7 +20,6 @@ provider "kubernetes-alpha" {
 
 provider "helm" {
   kubernetes {
-    load_config_file = true
     config_path      = "../kubeconfig"
   }
 }
@@ -61,8 +60,8 @@ resource "kubernetes_secret" "sealed_secrets" {
 resource "helm_release" "sealed_secrets" {
   name       = "sealed-secrets"
   chart      = "sealed-secrets"
-  repository = "https://kubernetes-charts.storage.googleapis.com"
-  version    = "1.10.3"
+  repository = "https://bitnami-labs.github.io/sealed-secrets"
+  version    = "1.13.2"
   namespace  = "kube-system"
 
   set {
@@ -142,7 +141,7 @@ resource "helm_release" "linkerd" {
   name       = "linkerd2"
   repository = "https://helm.linkerd.io/stable"
   chart      = "linkerd2"
-  version    = "2.8.1"
+  version    = "2.9.1"
   namespace  = kubernetes_namespace.linkerd.metadata[0].name
 
   set_sensitive {
@@ -172,6 +171,11 @@ resource "helm_release" "linkerd" {
 
   set {
     name  = "grafana.enabled"
+    value = false
+  }
+
+  set {
+    name  = "prometheus.enabled"
     value = false
   }
 }
@@ -217,7 +221,7 @@ resource "helm_release" "cert_manager" {
   name       = "cert-manager"
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
-  version    = "v0.15.1"
+  version    = "v1.1.0"
   namespace  = kubernetes_namespace.cert_manager.metadata[0].name
 
   set {

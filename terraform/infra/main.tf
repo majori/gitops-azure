@@ -1,11 +1,8 @@
 provider "azurerm" {
-  version = "=2.27.0"
   features {}
 }
 
-provider "random" {
-  version = "=2.2.1"
-}
+provider "random" {}
 
 data "azurerm_subscription" "current" {}
 
