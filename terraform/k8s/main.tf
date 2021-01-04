@@ -204,6 +204,27 @@ resource "helm_release" "postgres_operator" {
   }
 }
 
+resource "helm_release" "helm_operator" {
+  name       = "helm-operator"
+  repository = "https://charts.fluxcd.io"
+  chart      = "helm-operator"
+  version    = "1.2.0"
+  namespace  = kubernetes_namespace.operators.metadata[0].name
+
+  # Supported values:
+  # https://github.com/fluxcd/helm-operator/blob/master/chart/helm-operator/values.yaml
+
+  set {
+    name  = "helm.versions"
+    value = "v3"
+  }
+
+  set {
+    name = "rbac.create"
+    value = false
+  }
+}
+
 resource "kubernetes_namespace" "cert_manager" {
   metadata {
     name = "cert-manager"
@@ -247,7 +268,7 @@ resource "helm_release" "ingress_nginx" {
   name       = "ingress-nginx"
   repository = "https://kubernetes.github.io/ingress-nginx"
   chart      = "ingress-nginx"
-  version    = "2.13.0"
+  version    = "3.15.2"
   namespace  = kubernetes_namespace.ingresses.metadata[0].name
 
   # FluxCD can not parse digest part of an image, so remove it for now
@@ -273,83 +294,161 @@ resource "helm_release" "ingress_nginx" {
   }
 }
 
-resource "kubernetes_namespace" "flux" {
+resource "kubernetes_namespace" "argo_cd" {
   metadata {
-    name = "flux"
+    name = "argo-cd"
+    annotations = {
+      "linkerd.io/inject" : "enabled"
+    }
   }
 }
 
-resource "tls_private_key" "flux_identity" {
+resource "tls_private_key" "argocd_identity" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
-resource "kubernetes_secret" "flux_git_deploy" {
+resource "helm_release" "argo_cd" {
+  name       = "argo-cd"
+  repository = "https://argoproj.github.io/argo-helm"
+  chart      = "argo-cd"
+  version    = "2.11.0"
+  namespace  = kubernetes_namespace.argo_cd.metadata[0].name
+
+  set {
+    name = "nameOverride"
+    value = "argo-cd"
+  }
+
+  set {
+    name = "server.extraArgs[0]"
+    value = "--insecure"
+  }
+
+  set {
+    name = "server.ingress.hosts[0]"
+    value = "cd.majori.dev"
+  }
+
+  set {
+    name = "server.ingress.enabled"
+    value = "true"
+  }
+
+  set {
+    name = "server.ingress.annotations.kubernetes\\.io/ingress.class"
+    value = "nginx"
+  }
+
+  set {
+    name = "server.ingress.annotations.cert-manager\\.io/cluster-issuer"
+    value = "letsencrypt-prod"
+  }
+
+  set {
+    name = "server.ingress.annotations.cert-manager\\.io/acme-challenge-type"
+    value = "http01"
+  }
+
+  set {
+    name = "server.ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/configuration-snippet"
+    value = "proxy_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port; grpc_set_header l5d-dst-override $service_name.$namespace.svc.cluster.local:$service_port;"
+  }
+
+  set {
+    name = "server.ingress.tls[0].hosts[0]"
+    value = "cd.majori.dev"
+  }
+  
+  set {
+    name = "server.ingress.tls[0].secretName"
+    value = "argo-cd-tls"
+  }
+
+  depends_on = [
+    kubernetes_manifest.cluster_issuer
+  ]
+}
+
+resource "kubernetes_namespace" "expl_bot" {
   metadata {
-    name      = "flux-git-deploy"
-    namespace = kubernetes_namespace.flux.metadata[0].name
-  }
-
-  data = {
-    identity = tls_private_key.flux_identity.private_key_pem
+    name = "expl-bot"
+    annotations = {
+      "linkerd.io/inject" : "enabled"
+    }
   }
 }
 
-resource "helm_release" "helm_operator" {
-  name       = "helm-operator"
-  repository = "https://charts.fluxcd.io"
-  chart      = "helm-operator"
-  version    = "1.2.0"
-  namespace  = kubernetes_namespace.flux.metadata[0].name
+resource "kubernetes_manifest" "expl_bot_app" {
+  provider = kubernetes-alpha
 
-  # Supported values:
-  # https://github.com/fluxcd/helm-operator/blob/master/chart/helm-operator/values.yaml
-
-  set {
-    name  = "helm.versions"
-    value = "v3"
+  manifest = {
+    apiVersion = "argoproj.io/v1alpha1"
+    kind = "Application"
+    metadata = {
+      name = "expl-bot"
+      namespace = kubernetes_namespace.argo_cd.metadata[0].name
+    }
+    spec = {
+      destination = {
+        namespace = kubernetes_namespace.expl_bot.metadata[0].name
+        server = "https://kubernetes.default.svc"
+      }
+      project = "default"
+      source = {
+        path = "k8s/expl-bot"
+        repoURL = "https://github.com/majori/gitops-azure.git"
+        targetRevision = "HEAD"
+      }
+      syncPolicy = {
+        automated = {}
+      }
+    }
   }
 
-  set {
-    name  = "git.ssh.secretName"
-    value = kubernetes_secret.flux_git_deploy.metadata[0].name
-  }
-
-  set {
-    name = "rbac.create"
-    value = false
+  depends_on = [
+    helm_release.argo_cd
+  ]
+}
+resource "kubernetes_namespace" "piikki" {
+  metadata {
+    name = "expl-bot"
+    annotations = {
+      "linkerd.io/inject" : "enabled"
+    }
   }
 }
 
-resource "helm_release" "flux" {
-  name       = "flux"
-  repository = "https://charts.fluxcd.io"
-  chart      = "flux"
-  version    = "1.5.0"
-  namespace  = kubernetes_namespace.flux.metadata[0].name
+resource "kubernetes_manifest" "piikki_app" {
+  provider = kubernetes-alpha
 
-  # Supported values:
-  # https://github.com/fluxcd/flux/blob/master/chart/flux/values.yaml
-
-  set {
-    name  = "git.url"
-    value = var.gitops_repo_url
+  manifest = {
+    apiVersion = "argoproj.io/v1alpha1"
+    kind = "Application"
+    metadata = {
+      name = "piikki"
+      namespace = kubernetes_namespace.argo_cd.metadata[0].name
+    }
+    spec = {
+      destination = {
+        namespace = kubernetes_namespace.piikki.metadata[0].name
+        server = "https://kubernetes.default.svc"
+      }
+      project = "default"
+      source = {
+        path = "k8s/piikki"
+        repoURL = "https://github.com/majori/gitops-azure.git"
+        targetRevision = "HEAD"
+      }
+      syncPolicy = {
+        automated = {}
+      }
+    }
   }
 
-  set {
-    name  = "git.path"
-    value = var.gitops_repo_path
-  }
-
-  set {
-    name  = "git.secretName"
-    value = kubernetes_secret.flux_git_deploy.metadata[0].name
-  }
-
-  set {
-    name = "rbac.create"
-    value = false
-  }
+  depends_on = [
+    helm_release.argo_cd
+  ]
 }
 
 resource "kubernetes_manifest" "cluster_issuer" {

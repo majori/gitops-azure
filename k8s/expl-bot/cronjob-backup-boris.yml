@@ -2,7 +2,6 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: backup-boris-bot
-  namespace: expl-bot
 spec:
   schedule: "0 0 * * *"
   jobTemplate:

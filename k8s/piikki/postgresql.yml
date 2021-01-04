@@ -2,7 +2,6 @@ apiVersion: "acid.zalan.do/v1"
 kind: postgresql
 metadata:
   name: piikki-postgres
-  namespace: piikki
 spec:
   teamId: "piikki"
   volume:

@@ -3,7 +3,6 @@ apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: main
-  namespace: expl-bot
   annotations:
     fluxcd.io/automated: "true"
     filter.fluxcd.io/chart-image: "semver:~0"

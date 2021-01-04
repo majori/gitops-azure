@@ -2,7 +2,6 @@ apiVersion: "acid.zalan.do/v1"
 kind: postgresql
 metadata:
   name: expl-bot-postgres
-  namespace: expl-bot
 spec:
   teamId: "expl-bot"
   volume:
