@@ -407,12 +407,14 @@ resource "kubernetes_manifest" "expl_bot_app" {
   }
 
   depends_on = [
+    kubernetes_namespace.expl_bot,
     helm_release.argo_cd
   ]
 }
+
 resource "kubernetes_namespace" "piikki" {
   metadata {
-    name = "expl-bot"
+    name = "piikki"
     annotations = {
       "linkerd.io/inject" : "enabled"
     }
@@ -447,6 +449,7 @@ resource "kubernetes_manifest" "piikki_app" {
   }
 
   depends_on = [
+    kubernetes_namespace.piikki,
     helm_release.argo_cd
   ]
 }
