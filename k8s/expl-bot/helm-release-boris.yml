@@ -3,9 +3,6 @@ apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: boris
-  annotations:
-    fluxcd.io/automated: "true"
-    filter.fluxcd.io/chart-image: "semver:~0"
 spec:
   chart:
     git: https://github.com/majori/expl-bot.git

@@ -4,8 +4,6 @@ kind: HelmRelease
 metadata:
   name: api
   annotations:
-    fluxcd.io/automated: "true"
-    filter.fluxcd.io/chart-image: "glob:latest"
 spec:
   chart:
     git: https://github.com/majori/piikki.git
