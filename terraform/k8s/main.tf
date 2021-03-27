@@ -190,7 +190,7 @@ resource "helm_release" "postgres_operator" {
   name       = "postgres-operator"
   repository = "https://raw.githubusercontent.com/zalando/postgres-operator/master/charts/postgres-operator"
   chart      = "postgres-operator"
-  version    = "1.5.0"
+  version    = "1.6.1"
   namespace  = kubernetes_namespace.operators.metadata[0].name
 
   set {
@@ -201,6 +201,11 @@ resource "helm_release" "postgres_operator" {
   set {
     name  = "resources.requests.memory"
     value = "20Mi"
+  }
+
+  set {
+    name  = "configKubernetesCRD.enable_pod_disruption_budget"
+    value = "false"
   }
 }
 
