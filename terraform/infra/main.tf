@@ -24,7 +24,7 @@ resource "azurerm_public_ip" "aks_ingress" {
 }
 
 locals {
-  kubernetes_version = "1.17.9"
+  kubernetes_version = "1.18.14"
 }
 
 resource "azurerm_kubernetes_cluster" "main" {
